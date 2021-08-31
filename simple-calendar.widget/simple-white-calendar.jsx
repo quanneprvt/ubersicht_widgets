@@ -12,7 +12,7 @@ export const className = css`
   padding: 15px 30px;
   border: 1px solid #585858;
   border-radius: 30px;
-  transition: all 0.25s linear;
+  // transition: all 0.25s linear;
   transform-style: preserve-3d;
 `;
 const rect = "30px";
@@ -139,11 +139,17 @@ const table = (headers, bodies, today) => {
   );
 };
 let bounds;
+let timeoutRemove;
 
 const onMouseEnter = () => {
   let el = document.getElementById("simple-calendar-widget-simple-white-calendar-jsx");
   // el.style.transition = null;
   bounds = el.getBoundingClientRect();
+  clearTimeout(timeoutRemove);
+  el.style.transition = 'all 0.2s linear';
+  timeoutRemove = setTimeout(function(){
+    el.style.transition = '';
+  }, 200);
 }
 
 const onMouseMove = (e) => {
@@ -157,6 +163,10 @@ const onMouseMove = (e) => {
     y: topY - bounds.height / 2
   }
   const distance = Math.sqrt(center.x**2 + center.y**2);
+  clearTimeout(timeoutRemove);
+  timeoutRemove = setTimeout(function(){
+    el.style.transition = '';
+  }, 200);
   
   el.style.transform = `
     scale3d(1.07, 1.07, 1.07)
@@ -168,6 +178,11 @@ const onMouseMove = (e) => {
 const onMouseLeave = (e) => {
   let el = document.getElementById("simple-calendar-widget-simple-white-calendar-jsx");
   el.style.transform = `rotateX(0deg) rotateY(0deg)`;
+  clearTimeout(timeoutRemove);
+  el.style.transition = 'all 0.25s linear';
+  timeoutRemove = setTimeout(function(){
+    el.style.transition = '';
+  }, 250);
 }
 
 export const render = ({ output, error }) => {

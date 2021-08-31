@@ -21,7 +21,7 @@ export const className = css`
   top: 520px;
   right: 35px;
   transform-style: preserve-3d;
-  transition: all 0.25s linear;
+  // transition: all 0.25s linear;
   border: 1px solid gray;
   border-radius: 20px;
   #weather_wrapper {
@@ -46,7 +46,7 @@ export const className = css`
   .currentWeather {
     width: 180px;
     height: 200px;
-    background: rgb(237, 237, 237, 0.5);
+    background: rgb(237, 237, 237, 0.4);
     margin: 0;
     position: absolute;
     top: 0;
@@ -153,6 +153,7 @@ const getWeather = async () => {
 };
 
 let bounds;
+let timeoutRemove;
 
 const onMouseEnter = () => {
   let el = document.getElementById(
@@ -160,6 +161,11 @@ const onMouseEnter = () => {
   );
   // el.style.transition = null;
   bounds = el.getBoundingClientRect();
+  clearTimeout(timeoutRemove);
+  el.style.transition = 'all 0.2s linear';
+  timeoutRemove = setTimeout(function(){
+    el.style.transition = '';
+  }, 200);
 };
 
 const onMouseMove = (e) => {
@@ -175,6 +181,10 @@ const onMouseMove = (e) => {
     y: topY - bounds.height / 2,
   };
   const distance = Math.sqrt(center.x ** 2 + center.y ** 2);
+  clearTimeout(timeoutRemove);
+  timeoutRemove = setTimeout(function(){
+    el.style.transition = '';
+  }, 200);
 
   el.style.transform = `
     scale3d(1.2, 1.2, 1.2)
@@ -188,6 +198,11 @@ const onMouseLeave = (e) => {
     "simple-weather-widget-simple-weather-jsx"
   );
   el.style.transform = `rotateX(0deg) rotateY(0deg)`;
+  clearTimeout(timeoutRemove);
+  el.style.transition = 'all 0.25s linear';
+  timeoutRemove = setTimeout(function(){
+    el.style.transition = '';
+  }, 250);
 };
 
 export const render = ({ weatherData }) => {
