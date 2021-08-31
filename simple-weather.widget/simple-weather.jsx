@@ -14,7 +14,7 @@ export const updateState = (event, previousState) => {
     }
   }
 };
-export const refreshFrequency = 60000;
+export const refreshFrequency = 1800000;
 export const className = css`
   @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
   @import url(https://cdnjs.cloudflare.com/ajax/libs/weather-icons/1.2/css/weather-icons.min.css);
@@ -136,6 +136,17 @@ export const className = css`
     position: absolute;
     top: 5px;
   }
+  .errorContainer {
+    width: 300px;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+  }
+  .errorMessage {
+    color: white;
+    word-wrap: break-word;
+    transform: translateZ(100px);
+  }
 `;
 const ApiKey = "6dc5b712b10ae6ead76b6ede54e1dcad";
 const staticHcmCoord = {
@@ -156,22 +167,18 @@ let bounds;
 let timeoutRemove;
 
 const onMouseEnter = () => {
-  let el = document.getElementById(
-    "simple-weather-widget-simple-weather-jsx"
-  );
+  let el = document.getElementById("simple-weather-widget-simple-weather-jsx");
   // el.style.transition = null;
   bounds = el.getBoundingClientRect();
   clearTimeout(timeoutRemove);
-  el.style.transition = 'all 0.2s linear';
-  timeoutRemove = setTimeout(function(){
-    el.style.transition = '';
+  el.style.transition = "all 0.2s linear";
+  timeoutRemove = setTimeout(function () {
+    el.style.transition = "";
   }, 200);
 };
 
 const onMouseMove = (e) => {
-  let el = document.getElementById(
-    "simple-weather-widget-simple-weather-jsx"
-  );
+  let el = document.getElementById("simple-weather-widget-simple-weather-jsx");
   const mouseX = e.clientX;
   const mouseY = e.clientY;
   const leftX = mouseX - bounds.x;
@@ -182,8 +189,8 @@ const onMouseMove = (e) => {
   };
   const distance = Math.sqrt(center.x ** 2 + center.y ** 2);
   clearTimeout(timeoutRemove);
-  timeoutRemove = setTimeout(function(){
-    el.style.transition = '';
+  timeoutRemove = setTimeout(function () {
+    el.style.transition = "";
   }, 200);
 
   el.style.transform = `
@@ -194,21 +201,19 @@ const onMouseMove = (e) => {
 };
 
 const onMouseLeave = (e) => {
-  let el = document.getElementById(
-    "simple-weather-widget-simple-weather-jsx"
-  );
+  let el = document.getElementById("simple-weather-widget-simple-weather-jsx");
   el.style.transform = `rotateX(0deg) rotateY(0deg)`;
   clearTimeout(timeoutRemove);
-  el.style.transition = 'all 0.25s linear';
-  timeoutRemove = setTimeout(function(){
-    el.style.transition = '';
+  el.style.transition = "all 0.25s linear";
+  timeoutRemove = setTimeout(function () {
+    el.style.transition = "";
   }, 250);
 };
 
 export const render = ({ weatherData }) => {
   return (
     <div>
-      {!!weatherData ? (
+      {!weatherData.cod ? (
         <div
           id="weather_wrapper"
           onMouseEnter={(ev) => onMouseEnter(ev)}
@@ -250,7 +255,14 @@ export const render = ({ weatherData }) => {
           </div>
         </div>
       ) : (
-        <div></div>
+        <div
+          className="errorContainer"
+          onMouseEnter={(ev) => onMouseEnter(ev)}
+          onMouseMove={(ev) => onMouseMove(ev)}
+          onMouseLeave={(ev) => onMouseLeave(ev)}
+        >
+          <div className="errorMessage">{weatherData.message}</div>
+        </div>
       )}
     </div>
   );
