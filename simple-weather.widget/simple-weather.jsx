@@ -1,9 +1,21 @@
 import { css } from "uebersicht";
 
-export const command = async (dispatch) => {
-  const weatherData = await getWeather();
-  dispatch({ type: "FETCHED_DATA", data: weatherData });
+var timeLoop = 5;
+const commandFunc = async (dispatch) => {
+  try {
+    if (timeLoop > 0)
+    {
+      const weatherData = await getWeather();
+      dispatch({ type: "FETCHED_DATA", data: weatherData });
+    }
+    else dispatch({ type: "FETCHED_DATA", data: null });
+  } catch (err) {
+    timeLoop--;
+    dispatch({ type: "FETCHED_DATA", data: null });
+    setTimeout(commandFunc, 5000);
+  }
 };
+export const command = commandFunc;
 export const initialState = { weatherData: null };
 export const updateState = (event, previousState) => {
   switch (event.type) {
@@ -25,18 +37,18 @@ export const className = css`
   border: 1px solid gray;
   border-radius: 20px;
   #weather_wrapper {
-    width: 400px;
+    width: 345px;
   }
   .weatherCard {
-    width: 400px;
-    height: 200px;
+    width: 345px;
+    height: 180px;
     font-family: "Open Sans";
     position: relative;
   }
   .currentTemp {
-    width: 220px;
-    height: 200px;
-    background: rgba(41, 41, 41, 0.5);
+    width: 180px;
+    height: 180px;
+    background: rgba(0, 0, 0, 0.5);
     position: absolute;
     top: 0;
     left: 0;
@@ -44,8 +56,8 @@ export const className = css`
     border-bottom-left-radius: 20px;
   }
   .currentWeather {
-    width: 180px;
-    height: 200px;
+    width: 165px;
+    height: 180px;
     background: rgb(237, 237, 237, 0.4);
     margin: 0;
     position: absolute;
@@ -55,12 +67,12 @@ export const className = css`
     border-bottom-right-radius: 20px;
   }
   .temp {
-    font-size: 80px;
+    font-size: 60px;
     text-align: center;
     display: block;
     font-weight: 300;
     color: rgb(255, 255, 255);
-    padding: 20px 0 0;
+    padding: 15px 0 0;
     transform: translateZ(50px);
   }
   .weatherDesc {
@@ -68,7 +80,7 @@ export const className = css`
     text-align: center;
     text-transform: uppercase;
     font-weight: 700;
-    font-size: 20px;
+    font-size: 17px;
     display: block;
     transform: translateZ(35px);
   }
@@ -76,7 +88,7 @@ export const className = css`
     color: rgb(255, 255, 255);
     text-align: center;
     font-weight: 400;
-    font-size: 25px;
+    font-size: 20px;
     display: block;
     transform: translateZ(20px);
   }
@@ -92,7 +104,7 @@ export const className = css`
     transform: translateZ(50px);
   }
   .info {
-    width: 180px;
+    width: 165px;
     height: 50px;
     position: absolute;
     bottom: 0;
@@ -213,7 +225,7 @@ const onMouseLeave = (e) => {
 export const render = ({ weatherData }) => {
   return (
     <div>
-      {!weatherData.cod ? (
+      {(!weatherData || !weatherData.cod) && weatherData.current ? (
         <div
           id="weather_wrapper"
           onMouseEnter={(ev) => onMouseEnter(ev)}
@@ -261,7 +273,7 @@ export const render = ({ weatherData }) => {
           onMouseMove={(ev) => onMouseMove(ev)}
           onMouseLeave={(ev) => onMouseLeave(ev)}
         >
-          <div className="errorMessage">{weatherData.message}</div>
+          {/* <div className="errorMessage">{weatherData.message}</div> */}
         </div>
       )}
     </div>
